@@ -1,4 +1,4 @@
-require 'rubygems' if RUBY_VERSION < '1.9.0' && Puppet.features.rubygems?
+require 'rubygems' if RUBY_VERSION < '1.9.0' && Puppet.version < '3'
 require 'json' if Puppet.features.json?
 
 Puppet::Type.type(:sensu_check).provide(:json) do
@@ -32,6 +32,7 @@ Puppet::Type.type(:sensu_check).provide(:json) do
     self.interval = resource[:interval]
     self.subscribers = resource[:subscribers]
     # Optional arguments
+    self.sla = resource[:sla] unless resource[:sla].nil?
     self.type = resource[:type] unless resource[:type].nil?
     self.config = resource[:config] unless resource[:config].nil?
     self.aggregate = resource[:aggregate] unless resource[:aggregate].nil?
@@ -103,6 +104,14 @@ Puppet::Type.type(:sensu_check).provide(:json) do
 
   def subscribers=(value)
     conf['checks'][resource[:name]]['subscribers'] = value
+  end
+
+  def sla
+    conf['checks'][resource[:name]]['sla'] || []
+  end
+
+  def sla=(value)
+    conf['checks'][resource[:name]]['sla'] = value
   end
 
   def type
