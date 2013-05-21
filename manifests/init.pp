@@ -32,20 +32,26 @@ class sensu (
   $client_name              = $::fqdn,
   $plugins                  = [],
   $purge_config             = false,
+  $use_embedded_ruby        = false,
+  $safe_mode                = false,
 ){
 
+  anchor {'sensu::begin': }
+  anchor {'sensu::end': }
+
+  Anchor['sensu::begin'] ->
   Class['sensu::package'] ->
   Class['sensu::rabbitmq']
 
   Class['sensu::rabbitmq'] ->
   Class['sensu::server'] ~>
   Class['sensu::service::server'] ->
-  Class['sensu']
+  Anchor['sensu::end']
 
   Class['sensu::rabbitmq'] ->
   Class['sensu::client'] ~>
   Class['sensu::service::client'] ->
-  Class['sensu']
+  Anchor['sensu::end']
 
   if $server == 'true' or $server == true {
     if $client == 'true' or $client == true {
@@ -61,10 +67,11 @@ class sensu (
   }
 
   class { 'sensu::package':
-    version         => $version,
-    install_repo    => $install_repo,
-    notify_services => $notify_services,
-    purge_config    => $purge_config,
+    version           => $version,
+    install_repo      => $install_repo,
+    notify_services   => $notify_services,
+    purge_config      => $purge_config,
+    use_embedded_ruby => $use_embedded_ruby,
   }
 
   class { 'sensu::rabbitmq':
@@ -100,6 +107,7 @@ class sensu (
     client_name   => $client_name,
     enabled       => $client,
     purge_config  => $purge_config,
+    safe_mode     => $safe_mode,
   }
 
   class { 'sensu::service::client': enabled => $client }

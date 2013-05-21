@@ -21,6 +21,7 @@ describe 'sensu::check', :type => :define do
       :handlers             => ['/handler1', '/handler2'],
       :interval             => '10',
       :subscribers          => ['all'],
+      :sla                  => ['admin:2'],
       :type                 => 'metric',
       :standalone           => true,
       :notification         => 'some text',
@@ -28,6 +29,7 @@ describe 'sensu::check', :type => :define do
       :high_flap_threshold  => 15,
       :refresh              => 1800,
       :aggregate            => true,
+      :occurrences          => 5,
     } }
 
     it { should contain_sensu_check('mycheck').with(
@@ -35,13 +37,15 @@ describe 'sensu::check', :type => :define do
       'handlers'            => ['/handler1', '/handler2'],
       'interval'            => '10',
       'subscribers'         => ['all'],
+      'sla'                 => ['admin:2'],
       'type'                => 'metric',
       'standalone'          => true,
       'notification'        => 'some text',
       'low_flap_threshold'  => '10',
       'high_flap_threshold' => '15',
       'refresh'             => '1800',
-      'aggregate'           => true
+      'aggregate'           => true,
+      'occurrences'         => '5'
     ) }
   end
 

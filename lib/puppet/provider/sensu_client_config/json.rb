@@ -1,4 +1,4 @@
-require 'rubygems' if RUBY_VERSION < '1.9.0' && Puppet.features.rubygems?
+require 'rubygems' if RUBY_VERSION < '1.9.0' && Puppet.version < '3'
 require 'json' if Puppet.features.json?
 
 Puppet::Type.type(:sensu_client_config).provide(:json) do
@@ -25,6 +25,7 @@ Puppet::Type.type(:sensu_client_config).provide(:json) do
     self.client_name = resource[:client_name]
     self.address = resource[:address]
     self.subscriptions = resource[:subscriptions]
+    self.safe_mode = resource[:safe_mode]
   end
 
   def destroy
@@ -58,4 +59,26 @@ Puppet::Type.type(:sensu_client_config).provide(:json) do
   def subscriptions=(value)
     @conf['client']['subscriptions'] = value
   end
+
+  def safe_mode
+    case @conf['client']['safe_mode']
+    when true
+      :true
+    when false
+      :false
+    else
+      @conf['client']['safe_mode']
+    end
+  end
+
+  def safe_mode=(value)
+    case value
+    when true, 'true', 'True', :true, 1
+      @conf['client']['safe_mode'] = true
+    else
+      @conf['client']['safe_mode'] = false
+    end
+  end
+
 end
+
