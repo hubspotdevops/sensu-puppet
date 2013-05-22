@@ -28,7 +28,7 @@ class sensu::client(
     client_name   => $client_name,
     address       => $address,
     subscriptions => $subscriptions,
-    safe_mode     => $safe_mode,
+    #safe_mode     => $safe_mode,
   }
 
 }
